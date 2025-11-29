@@ -1,18 +1,13 @@
 import { useState, useRef, useEffect } from "react";
-import { ChatMessage, Message } from "@/components/ChatMessage";
+import { ChatMessage } from "@/components/ChatMessage";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Send } from "lucide-react";
+import { Send, Trash2, Loader2 } from "lucide-react"; 
+import { useChat } from "@/hooks/useChat"; 
 
 const Index = () => {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "1",
-      text: "Olá! Como posso ajudar você hoje?",
-      sender: "bot",
-      timestamp: new Date(),
-    },
-  ]);
+  const { messages, sendMessage, clearChat, isLoading } = useChat();
+  
   const [inputValue, setInputValue] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -22,47 +17,15 @@ const Index = () => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
-
-  // Mock function para simular envio de mensagem
-  const sendMessage = async (text: string): Promise<string> => {
-    // Aqui será integrado com o backend futuramente
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const responses = [
-          "Entendi! Como posso ajudar com isso?",
-          "Interessante! Conte-me mais.",
-          "Claro, posso te ajudar com isso.",
-          "Ótima pergunta! Vou pensar sobre isso.",
-        ];
-        resolve(responses[Math.floor(Math.random() * responses.length)]);
-      }, 500);
-    });
-  };
+  }, [messages, isLoading]);
 
   const handleSendMessage = async () => {
-    if (!inputValue.trim()) return;
+    if (!inputValue.trim() || isLoading) return; 
 
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      text: inputValue,
-      sender: "user",
-      timestamp: new Date(),
-    };
-
-    setMessages((prev) => [...prev, userMessage]);
-    setInputValue("");
-
-    // Simula resposta do bot
-    const botResponse = await sendMessage(inputValue);
-    const botMessage: Message = {
-      id: (Date.now() + 1).toString(),
-      text: botResponse,
-      sender: "bot",
-      timestamp: new Date(),
-    };
-
-    setMessages((prev) => [...prev, botMessage]);
+    const text = inputValue;
+    setInputValue(""); 
+    
+    await sendMessage(text); 
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -74,17 +37,39 @@ const Index = () => {
 
   return (
     <div className="flex flex-col h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border bg-card px-6 py-4 shadow-sm">
-        <h1 className="text-xl font-semibold text-foreground">Chat</h1>
+      {/* Header Atualizado */}
+      <header className="border-b border-border bg-card px-6 py-4 shadow-sm flex justify-between items-center">
+        <div>
+          <h1 className="text-xl font-semibold text-foreground">Luar Cosméticos AI</h1>
+          <p className="text-xs text-muted-foreground">Assistente Virtual</p>
+        </div>
+        
+        <Button 
+          variant="ghost" 
+          onClick={clearChat}
+          title="Nova Conversa / Limpar Memória"
+          className="text-muted-foreground hover:text-destructive flex items-center gap-2"
+        >
+          <Trash2 className="h-5 w-5" />
+          <span className="text-sm">Limpar Histórico</span>
+        </Button>
       </header>
 
       {/* Messages Area */}
-      <main className="flex-1 overflow-y-auto px-4 py-6 md:px-8">
-        <div className="mx-auto max-w-3xl">
+      <main className="flex-1 overflow-y-auto px-4 py-6 md:px-8 bg-slate-50/50">
+        <div className="mx-auto max-w-3xl space-y-4">
           {messages.map((message) => (
             <ChatMessage key={message.id} message={message} />
           ))}
+          
+          {/* Loading Atualizado */}
+          {isLoading && (
+            <div className="flex items-center gap-2 text-muted-foreground text-sm p-4 animate-pulse">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              <span>Luar Cosméticos está digitando...</span>
+            </div>
+          )}
+          
           <div ref={messagesEndRef} />
         </div>
       </main>
@@ -96,16 +81,17 @@ const Index = () => {
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder="Digite sua mensagem..."
+            placeholder="Pergunte sobre perfumes, preços ou dicas..."
             className="flex-1 bg-input border-border focus-visible:ring-accent transition-all"
+            disabled={isLoading}
           />
           <Button
             onClick={handleSendMessage}
-            disabled={!inputValue.trim()}
+            disabled={!inputValue.trim() || isLoading}
             className="bg-accent text-accent-foreground hover:bg-accent/90 transition-all shadow-sm"
             size="icon"
           >
-            <Send className="h-4 w-4" />
+            {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
           </Button>
         </div>
       </footer>
