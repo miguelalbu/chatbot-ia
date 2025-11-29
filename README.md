@@ -92,16 +92,6 @@ Dada a natureza de um MVP, algumas decisões focaram na simplicidade e portabili
 3.  **Segurança:** Implementar autenticação via JWT para proteger os endpoints da API.
 4.  **Vector Store em Nuvem:** Migrar do ChromaDB local para Pinecone ou Weaviate para escalar a base de conhecimento sem depender de disco local.
 
-### 2. RAG Dinâmico com Múltiplos PDFs
-O serviço de RAG não é estático. Ele varre a pasta `data/` e indexa automaticamente todos os PDFs encontrados (`manual.pdf`, `marcas.pdf`, etc.) usando `PyPDFLoader` e `RecursiveCharacterTextSplitter`.
-
-### 3. Engenharia de Prompt Avançada
-Utilizei `PromptTemplate` do LangChain com diretrizes estritas:
-
-- **Proteção contra Alucinação:** O bot só informa preços se eles existirem no retorno do SQL.
-- **Continuidade:** O bot detecta se já existe histórico e para de enviar saudações ("Olá") repetitivas.
-- **Captura de Nome:** O bot identifica se o usuário disse o nome e passa a usá-lo para gerar Rapport.
-
 ---
 
 ## 🛠️ Como Rodar o Projeto
