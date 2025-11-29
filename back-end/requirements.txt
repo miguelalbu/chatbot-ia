@@ -1,9 +1,11 @@
 fastapi
 uvicorn
-sqlalchemy
-chromadb
-google-generativeai
 python-dotenv
+pydantic
+chromadb
+pypdf
+redis
+langchain
+langchain-google-genai
 pytest
 httpx
-pydantic

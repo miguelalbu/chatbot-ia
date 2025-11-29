@@ -25,10 +25,10 @@ class SQLService:
         cursor.execute("SELECT count(*) FROM perfumes")
         if cursor.fetchone()[0] == 0:
             dados = [
-                (1, 'Essência Real', 'Royal Scents', 250.00, 15),
-                (2, 'Aqua Blue', 'Oceanic', 180.00, 8),
-                (3, 'Nightfall Intense', 'Dark Wood', 320.00, 5),
-                (4, 'Citrus Breeze', 'Summer Vibes', 120.00, 20)
+                (1, 'Malbec Tradicional', 'oBoticário', 150.00, 15),
+                (2, 'Essencial Oud', 'Natura', 180.00, 8),
+                (3, 'Asad Bourbon', 'Lattafa', 320.00, 5),
+                (4, 'Kaiak Tradicional Masculino', 'Natura', 120.00, 20)
             ]
             cursor.executemany("INSERT INTO perfumes VALUES (?, ?, ?, ?, ?)", dados)
             conn.commit()
